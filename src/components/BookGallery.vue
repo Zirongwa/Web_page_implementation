@@ -5,56 +5,49 @@ const props = defineProps({
   works: { type: Array, required: true },
 })
 
-// ★ 環裡有幾張卡片 = works 陣列裡有幾筆資料（到 App.vue 加 / 刪 { ... }）
+// ★ 頁面數量 = works 陣列筆數（到 works.js 加 / 刪）。頁面越多，越像密集的書本燈。
 const N = computed(() => props.works.length)
 
-// ★ 排列密度：半徑越小，卡片排得越密（像書本燈那樣擠在一起）
-//   想更鬆一點就把 32 調大、更密就調小
-const radius = computed(() => Math.max(190, N.value * 32))
+// ★★ 滑鼠移到頁面上時的效果 ★★
+const LIFT_UP = -55 // 升起多少（負數＝往上）
+const LIFT_FORWARD = 70 // 往前多少
+const LIFT_SCALE = 1.08 // 放大倍率
+const SPREAD = 10 // 前後頁面展開的角度（越大開越多）
+// （速度在下面 CSS 的 .card → transition: transform 0.5s）
 
-// ★★ 滑鼠移到卡片上時的效果 ★★
-const LIFT_UP = -70 // 升起多少（負數＝往上）
-const LIFT_FORWARD = 90 // 往前多少（越大越靠近你）
-const LIFT_SCALE = 1.12 // 放大倍率
-const SPREAD = 13 // 前後卡片往兩側「展開」的角度（越大開越多）
-// （動作速度在下面 CSS 的 .card → transition: transform 0.5s）
-
-const hovered = ref(null) // 滑鼠正浮在哪張卡片上
-const album = ref(null) // 點開放大的作品
+const hovered = ref(null)
+const album = ref(null)
 const ring = ref(null)
 const stage = ref(null)
 
+// 重點：頁面以「左邊中央」為軸（書背），全部從中心放射狀展開
 function cardTransform(i) {
   const base = (360 / N.value) * i
-  let extraAngle = 0
+  let extra = 0
   let ty = 0
   let tz = 0
   let sc = 1
-
   if (hovered.value !== null) {
     const d = i - hovered.value
     if (d === 0) {
-      // 被指到的這張：升起 + 往前 + 放大
       ty = LIFT_UP
       tz = LIFT_FORWARD
       sc = LIFT_SCALE
     } else {
-      // 前後的卡片：往兩側推開，越靠近被指到的那張推越多
       const dir = d > 0 ? 1 : -1
       const falloff = Math.max(0, 1 - (Math.abs(d) - 1) * 0.4)
-      extraAngle = dir * SPREAD * falloff
+      extra = dir * SPREAD * falloff
     }
   }
-
-  return `rotateY(${base + extraAngle}deg) translateZ(${radius.value + tz}px) translateY(${ty}px) scale(${sc})`
+  return `rotateY(${base + extra}deg) translateZ(${tz}px) translateY(${ty}px) scale(${sc})`
 }
 
 // === 旋轉狀態 ===
 let curY = 0
-let curX = -6
-let tgtX = -6
+let curX = -8
+let tgtX = -8
 let dragVel = 0
-const autoSpin = 0.12
+const autoSpin = 0.1
 let raf = 0
 
 let dragging = false
@@ -82,7 +75,7 @@ function onDown(e) {
 function onMove(e) {
   const r = stage.value.getBoundingClientRect()
   const cy = r.top + r.height / 2
-  tgtX = -6 + ((e.clientY - cy) / (r.height / 2)) * -12
+  tgtX = -8 + ((e.clientY - cy) / (r.height / 2)) * -10
   if (dragging) {
     const dx = e.clientX - lastX
     if (Math.abs(dx) > 3) moved = true
@@ -141,7 +134,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
           :key="item.id"
           class="card"
           :class="{ hovered: i === hovered }"
-          :style="{ transform: cardTransform(i) }"
+          :style="{ transform: cardTransform(i), zIndex: i === hovered ? 20 : 1 }"
           @mouseenter="onEnter(i)"
           @mouseleave="onLeave"
           @click="onCard(i)"
@@ -186,7 +179,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
 .stage {
   flex: 1;
   min-height: 56vh;
-  perspective: 1700px;
+  perspective: 1100px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -208,23 +201,23 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
 
 .card {
   position: absolute;
-  left: -110px;
-  top: -150px;
-  width: 220px;
-  height: 300px;
+  left: 0; /* 左邊貼齊中心 */
+  top: -120px; /* = 高度一半 */
+  width: 160px;
+  height: 240px;
   border: none;
   padding: 0;
-  border-radius: 5px;
+  border-radius: 4px;
   overflow: hidden;
   cursor: pointer;
   background: #e7e3da;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
+  transform-origin: left center; /* ★ 以左邊中央為軸（書背），頁面從中心展開 */
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
   /* ↓ 控制升起 / 展開的速度，想更慢把 0.5s 調大 */
   transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.4s;
 }
 .card.hovered {
-  box-shadow: 0 50px 90px rgba(0, 0, 0, 0.42);
-  z-index: 10;
+  box-shadow: 0 44px 80px rgba(0, 0, 0, 0.4);
 }
 .card img {
   width: 100%;
@@ -240,7 +233,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
+  font-size: 26px;
   color: #fff;
   background: rgba(0, 0, 0, 0.25);
 }
@@ -328,13 +321,12 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
 @media (max-width: 760px) {
   .stage {
     min-height: 48vh;
-    perspective: 1100px;
+    perspective: 800px;
   }
   .card {
-    width: 160px;
-    height: 220px;
-    left: -80px;
-    top: -110px;
+    width: 120px;
+    height: 180px;
+    top: -90px;
   }
   .album {
     grid-template-columns: 1fr;
