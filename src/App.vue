@@ -70,7 +70,7 @@ const works = [
 <template>
   <main class="page">
     <header class="top">
-      <p class="name">王子蓉</p>
+      <p class="name">王子榮</p>
       <p class="tag">個人作品集 · Portfolio</p>
     </header>
 
