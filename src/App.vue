@@ -76,13 +76,13 @@ const works = [
 
     <section class="hero">
       <h1 class="display">Selected<br />Works</h1>
-      <p class="hint">拖曳或移動滑鼠旋轉　·　點擊卡片會緩緩往前抬起，再點一次收回</p>
+      <p class="hint">拖曳或移動滑鼠旋轉　·　滑鼠移到卡片上會浮出，點擊放大展開</p>
     </section>
 
     <AlbumRadialGallery :works="works" />
 
     <footer class="foot">
-      <span>© 2026 王子榮</span>
+      <span>© 2026 王子蓉</span>
       <span>跨域創作基礎</span>
     </footer>
   </main>

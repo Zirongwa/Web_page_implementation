@@ -8,25 +8,23 @@ const props = defineProps({
 // ★ 環裡有幾張卡片 = works 陣列裡有幾筆資料。
 //   要增減卡片，就到 App.vue 的 works 陣列加 / 刪一段 { ... } 即可。
 const N = computed(() => props.works.length)
-
-// 環的半徑：卡片越多環越大，才不會擠在一起
 const radius = computed(() => Math.max(340, (N.value * 250) / (2 * Math.PI)))
 
-// ★★ 想調整「點擊後卡片抬起」的效果，改這三個數字 ★★
-const LIFT_FORWARD = 170 // 往前移多少（越大 = 越靠近你、看起來越大張）
-const LIFT_UP = -55 // 往上移多少（負數 = 往上）
-const LIFT_SCALE = 1.12 // 放大倍率
-// （移動的「速度快慢」是在下面 CSS 的 .card 那行 transition: transform 0.7s，
-//   想更慢就把 0.7s 調大、更快就調小。）
+// ★★ 滑鼠移到卡片上時「往前浮出」的效果，改這三個數字 ★★
+const LIFT_FORWARD = 130 // 往前移多少（越大＝越靠近你、越大張）
+const LIFT_UP = -40 // 往上移多少（負數＝往上）
+const LIFT_SCALE = 1.1 // 放大倍率
+// （浮出的「速度」在下面 CSS 的 .card → transition: transform 0.5s，
+//   想更慢把 0.5s 調大、更快調小。）
 
-const selected = ref(null) // 目前被選中（抬起）的卡片 index；null = 沒有
+const hovered = ref(null) // 滑鼠正浮在哪張卡片上；null = 沒有
+const album = ref(null) // 點開放大的作品；null = 沒打開
 const ring = ref(null)
 const stage = ref(null)
 
-// 每張卡片在環上的位置；被選中的那張會往前 + 往上 + 放大
 function cardTransform(i) {
   const angle = (360 / N.value) * i
-  if (i === selected.value) {
+  if (i === hovered.value) {
     return `rotateY(${angle}deg) translateZ(${radius.value + LIFT_FORWARD}px) translateY(${LIFT_UP}px) scale(${LIFT_SCALE})`
   }
   return `rotateY(${angle}deg) translateZ(${radius.value}px)`
@@ -45,8 +43,8 @@ let lastX = 0
 let moved = false
 
 function loop() {
-  // 有卡片被選中、或正在拖曳時，停止自動旋轉，讓抬起的卡片停在原地
-  if (selected.value === null && !dragging) {
+  // 滑鼠浮在卡片上、打開大圖、或拖曳時，暫停自動旋轉
+  if (album.value === null && hovered.value === null && !dragging) {
     curY += autoSpin + dragVel
     dragVel *= 0.92
   }
@@ -79,20 +77,26 @@ function onUp() {
   dragging = false
 }
 
-// 點卡片：點同一張 → 收回；點別張 → 換成那張抬起
+// 滑鼠移到卡片上 → 浮出；移開 → 收回
+function onEnter(i) {
+  if (!dragging) hovered.value = i
+}
+function onLeave() {
+  hovered.value = null
+}
+// 點卡片 → 放大展開成大圖
 function onCard(i) {
   if (moved) {
     moved = false
     return
   }
-  selected.value = selected.value === i ? null : i
+  album.value = props.works[i]
 }
-// 點空白處 → 收回
-function onStageClick() {
-  selected.value = null
+function closeAlbum() {
+  album.value = null
 }
 function onKey(e) {
-  if (e.key === 'Escape') selected.value = null
+  if (e.key === 'Escape') closeAlbum()
 }
 
 onMounted(() => {
@@ -109,19 +113,21 @@ onBeforeUnmount(() => {
 })
 
 const isVideo = (item) => item?.type === 'video'
-const current = computed(() => (selected.value === null ? null : props.works[selected.value]))
+const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
 </script>
 
 <template>
   <div class="gallery">
-    <div ref="stage" class="stage" @pointerdown="onDown" @click.self="onStageClick">
+    <div ref="stage" class="stage" @pointerdown="onDown">
       <div ref="ring" class="ring">
         <button
           v-for="(item, i) in works"
           :key="item.id"
           class="card"
-          :class="{ lifted: i === selected }"
+          :class="{ hovered: i === hovered }"
           :style="{ transform: cardTransform(i) }"
+          @mouseenter="onEnter(i)"
+          @mouseleave="onLeave"
           @click="onCard(i)"
         >
           <img :src="item.image" :alt="item.title" draggable="false" />
@@ -130,11 +136,25 @@ const current = computed(() => (selected.value === null ? null : props.works[sel
       </div>
     </div>
 
-    <!-- 被選中時，下方淡入顯示作品標題 -->
+    <!-- 點開後的「放大展開」大圖頁 -->
     <transition name="fade">
-      <div v-if="current" class="caption">
-        <h2>{{ current.title }}</h2>
-        <p>{{ current.subtitle }}</p>
+      <div v-if="album" class="overlay" @click.self="closeAlbum">
+        <button class="close" @click="closeAlbum" aria-label="關閉">✕</button>
+        <div class="album">
+          <div class="media" :class="{ wide: isVideo(album) }">
+            <template v-if="isVideo(album)">
+              <video v-if="isMp4(album.video)" :src="album.video" controls autoplay playsinline></video>
+              <iframe v-else :src="album.video" allow="autoplay; fullscreen" allowfullscreen></iframe>
+            </template>
+            <img v-else :src="album.image" :alt="album.title" />
+          </div>
+          <div class="meta">
+            <p class="year">{{ album.year }}</p>
+            <h3>{{ album.title }}</h3>
+            <p class="role">{{ album.subtitle }}</p>
+            <p class="desc">{{ album.description }}</p>
+          </div>
+        </div>
       </div>
     </transition>
   </div>
@@ -173,8 +193,8 @@ const current = computed(() => (selected.value === null ? null : props.works[sel
 
 .card {
   position: absolute;
-  left: -110px; /* = 寬度一半 */
-  top: -150px; /* = 高度一半 */
+  left: -110px;
+  top: -150px;
   width: 220px;
   height: 300px;
   border: none;
@@ -184,10 +204,10 @@ const current = computed(() => (selected.value === null ? null : props.works[sel
   cursor: pointer;
   background: #e7e3da;
   box-shadow: 0 24px 50px rgba(0, 0, 0, 0.22);
-  /* ↓ 這行讓「抬起」的動作緩慢平滑；想更慢把 0.7s 調大 */
-  transition: transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.4s;
+  /* ↓ 這行控制「浮出」的速度，想更慢把 0.5s 調大 */
+  transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.4s;
 }
-.card.lifted {
+.card.hovered {
   box-shadow: 0 50px 90px rgba(0, 0, 0, 0.4);
   z-index: 10;
 }
@@ -210,19 +230,76 @@ const current = computed(() => (selected.value === null ? null : props.works[sel
   background: rgba(0, 0, 0, 0.25);
 }
 
-.caption {
-  text-align: center;
-  padding: 8px 20px 4px;
+/* 放大展開頁 */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(20, 19, 15, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  backdrop-filter: blur(6px);
 }
-.caption h2 {
+.close {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+}
+.album {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 48px;
+  max-width: 1000px;
+  width: 100%;
+  align-items: center;
+  color: var(--paper);
+}
+.media {
+  aspect-ratio: 3 / 4;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+  background: #000;
+}
+.media.wide {
+  aspect-ratio: 16 / 9;
+}
+.media img,
+.media video,
+.media iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: none;
+  display: block;
+}
+.meta .year {
+  color: var(--accent);
+  letter-spacing: 0.2em;
+  font-size: 13px;
+}
+.meta h3 {
   font-family: 'Fraunces', serif;
   font-weight: 400;
-  font-size: clamp(20px, 3vw, 30px);
+  font-size: 40px;
+  margin: 10px 0;
 }
-.caption p {
-  font-size: 13px;
-  color: var(--muted);
+.meta .role {
+  color: #c9c3b8;
+  margin-bottom: 18px;
   letter-spacing: 0.04em;
+}
+.meta .desc {
+  line-height: 1.7;
+  color: #e7e2d8;
+  font-size: 15px;
 }
 
 .fade-enter-active,
@@ -244,6 +321,16 @@ const current = computed(() => (selected.value === null ? null : props.works[sel
     height: 220px;
     left: -80px;
     top: -110px;
+  }
+  .album {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .media {
+    aspect-ratio: 16 / 10;
+  }
+  .overlay {
+    padding: 20px;
   }
 }
 </style>
