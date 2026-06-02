@@ -76,7 +76,7 @@ const works = [
 
     <section class="hero">
       <h1 class="display">Selected<br />Works</h1>
-      <p class="hint">滾動滑鼠、左右拖曳，或按 ← → 切換　·　點擊中央作品展開</p>
+      <p class="hint">拖曳或移動滑鼠旋轉　·　點擊卡片會緩緩往前抬起，再點一次收回</p>
     </section>
 
     <AlbumRadialGallery :works="works" />
@@ -135,17 +135,17 @@ body {
 
 .hero {
   text-align: center;
-  padding: 16px 20px 0;
+  padding: 8px 20px 0;
 }
 .display {
   font-family: 'Fraunces', serif;
   font-weight: 350;
-  font-size: clamp(48px, 9vw, 130px);
+  font-size: clamp(38px, 6.5vw, 84px);
   line-height: 0.92;
   letter-spacing: -0.02em;
 }
 .hint {
-  margin-top: 18px;
+  margin-top: 14px;
   font-size: 13px;
   color: var(--muted);
   letter-spacing: 0.03em;
