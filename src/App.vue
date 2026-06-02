@@ -82,7 +82,7 @@ const works = [
     <AlbumRadialGallery :works="works" />
 
     <footer class="foot">
-      <span>© 2026 王子蓉</span>
+      <span>© 2026 王子榮</span>
       <span>跨域創作基礎</span>
     </footer>
   </main>
