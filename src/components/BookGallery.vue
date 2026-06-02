@@ -20,7 +20,11 @@ const album = ref(null)
 const ring = ref(null)
 const stage = ref(null)
 
-// 重點：頁面以「左邊中央」為軸（書背），全部從中心放射狀展開
+// ★ 中空圓柱的「半徑」：數字越大，中間的洞越大、圓越大
+//   想更空就調大、想更密就調小
+const RADIUS = 280
+
+// 頁面排在半徑 RADIUS 的外圈上，面向外 → 中心留空，形成中空圓柱
 function cardTransform(i) {
   const base = (360 / N.value) * i
   let extra = 0
@@ -39,7 +43,7 @@ function cardTransform(i) {
       extra = dir * SPREAD * falloff
     }
   }
-  return `rotateY(${base + extra}deg) translateZ(${tz}px) translateY(${ty}px) scale(${sc})`
+  return `rotateY(${base + extra}deg) translateZ(${RADIUS + tz}px) translateY(${ty}px) scale(${sc})`
 }
 
 // === 旋轉狀態 ===
@@ -201,9 +205,9 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
 
 .card {
   position: absolute;
-  left: 0; /* 左邊貼齊中心 */
+  left: -80px; /* = 寬度一半，讓頁面置中 */
   top: -120px; /* = 高度一半 */
-  width: 280px;
+  width: 160px;
   height: 240px;
   border: none;
   padding: 0;
@@ -211,7 +215,6 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   overflow: hidden;
   cursor: pointer;
   background: #e7e3da;
-  transform-origin: left center; /* ★ 以左邊中央為軸（書背），頁面從中心展開 */
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
   /* ↓ 控制升起 / 展開的速度，想更慢把 0.5s 調大 */
   transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.4s;
