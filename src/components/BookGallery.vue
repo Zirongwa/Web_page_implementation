@@ -203,7 +203,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   position: absolute;
   left: 0; /* 左邊貼齊中心 */
   top: -120px; /* = 高度一半 */
-  width: 160px;
+  width: 280px;
   height: 240px;
   border: none;
   padding: 0;
