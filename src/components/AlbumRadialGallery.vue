@@ -203,6 +203,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   overflow: hidden;
   cursor: pointer;
   background: #e7e3da;
+  backface-visibility: hidden;
   box-shadow: 0 24px 50px rgba(0, 0, 0, 0.22);
   /* ↓ 這行控制「浮出」的速度，想更慢把 0.5s 調大 */
   transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.4s;
