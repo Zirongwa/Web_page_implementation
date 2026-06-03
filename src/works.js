@@ -59,4 +59,22 @@ export const works = [
     image: '/works/06.jpg',
     description: '這是第六件作品的介紹文字。',
   },
+  {
+    id: 7,
+    type: 'image',
+    title: '紙上漫遊',
+    subtitle: '手作書 · 2026',
+    year: '2026',
+    image: '/works/07.jpg',
+    description: '這是第七件作品的介紹文字。',
+  },
+  {
+    id: 8,
+    type: 'image',
+    title: '紙上漫遊',
+    subtitle: '手作書 · 2026',
+    year: '2026',
+    image: '/works/08.jpg',
+    description: '這是第八件作品的介紹文字。',
+  },
 ]
