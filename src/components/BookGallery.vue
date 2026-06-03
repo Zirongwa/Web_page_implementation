@@ -145,8 +145,8 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
             zIndex: i === hovered ? 20 : 1,
             width: item.width ? item.width + 'px' : null,
             height: item.height ? item.height + 'px' : null,
-            marginLeft: item.width ? -(item.width / 2) + 'px' : null,
-            marginTop: item.height ? -(item.height / 2) + 'px' : null,
+            left: item.width ? -(item.width / 2) + 'px' : null,
+            top: item.height ? -(item.height / 2) + 'px' : null,
           }"
           @mouseenter="onEnter(i)"
           @mouseleave="onLeave"
