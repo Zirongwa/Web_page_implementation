@@ -213,14 +213,6 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.4s;
 }
 
-.card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--paper);   /* 跟頁面背景同色 */
-  backface-visibility: visible;
-  transform: rotateY(180deg);
-}
 .card.hovered {
   box-shadow: 0 50px 90px rgba(0, 0, 0, 0.4);
   z-index: 10;
