@@ -69,8 +69,6 @@ export const works = [
     cover: '/works/Untitled.JPEG',   // ← 卡片上顯示的封面縮圖
     images: [                       // ← 點開後可瀏覽的多張圖
       '/works/Untitled.JPEG',
-      '/works/01_b.jpg',
-      '/works/01_c.jpg',
     ],
     width: 198,
     height: 280,
