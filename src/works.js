@@ -57,7 +57,7 @@ export const works = [
     image: '/works/Liminal_Fade.jpg',
     width: 198,    // ← 卡片寬度(px)，不填就用預設
     height: 280,   // ← 卡片高度(px)，不填就用預設
-    video: 'https://www.youtube.com/embed/68qgdzrjplc',
+    video: 'https://www.youtube.com/embed/68qgdzrjplc?modestbranding=1&rel=0&controls=1&iv_load_policy=3',
     description: '彌留之際= au6xu 65 ru4 《Liminal Fade》｜創作理念在《Liminal Fade》中，我以太空人穿越宇宙、雲層、海洋直至海底的視覺旅程，描繪一段模糊於夢境與現實之間的「臨界狀態」（liminal state）。苔蘚與花朵覆蓋的太空衣象徵自然對人造的回收，而從宇宙墜入深海的過程，則反映出自我意識的逐層剝離與沉潛。本作品結合AI生成影像與實拍素材，實驗性地將弗洛伊德的夢境理論與人工智慧的無意識演算機制並置，企圖在無序與秩序之間探索創作的本質。我試圖將夢境視為一種創作語言，將AI視為夢的延伸者，進一步思考：若AI與人類同樣生成夢境，我們是否仍能辨認什麼是真實？作品同時回應波德里亞的「超現實」理論與馬庫斯·杜·索托伊對AI創造力的探討，藉由視覺敘事與詩意象徵，質疑個體性、記憶、創造與存在的界線。《Liminal Fade》不僅是一段影像旅程，更是一場關於人機共創、意識轉換與存在意義的沈思。',
   },
   {
