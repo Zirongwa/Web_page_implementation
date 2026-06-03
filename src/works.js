@@ -63,10 +63,10 @@ export const works = [
   {
     id: 6,
     type: 'image',
-    title: '紙上漫遊',
-    subtitle: '手作書 · 2026',
+    title: 'Untitled',
+    subtitle: '3D場景渲染圖 · 2026',
     year: '2026',
-    image: '/works/06.jpg',
+    image: '/works/Untitled.JPEG',
     width: 198,
     height: 280,
     description: '這是第六件作品的介紹文字。',
