@@ -245,7 +245,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
 }
 .info {
   position: absolute;
-  top: 0;
+  bottom: 100%;
   left: 0;
   right: 0;
   padding: 12px 14px;
@@ -259,12 +259,12 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
 .info-year {
   font-size: 11px;
   letter-spacing: 0.15em;
-  color: #fff;
+  color: var(--ink);
   margin-bottom: 3px;
 }
 .info-sub {
   font-size: 12px;
-  color: rgba(255,255,255,0.85);
+  color: var(--muted);
   letter-spacing: 0.04em;
 }
 /* 放大展開頁 */
