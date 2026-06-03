@@ -66,7 +66,12 @@ export const works = [
     title: 'Untitled',
     subtitle: '3D場景渲染圖 · 2026',
     year: '2026',
-    image: '/works/Untitled.JPEG',
+    cover: '/works/Untitled.JPEG',   // ← 卡片上顯示的封面縮圖
+    images: [                       // ← 點開後可瀏覽的多張圖
+      '/works/Untitled.JPEG',
+      '/works/01_b.jpg',
+      '/works/01_c.jpg',
+    ],
     width: 198,
     height: 280,
     description: '這是第六件作品的介紹文字。',
