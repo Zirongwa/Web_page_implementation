@@ -1,33 +1,32 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
- 
+// 加在 script setup 裡，其他程式碼的上面
 const base = import.meta.env.BASE_URL
-const imgUrl = (path) => path ? base + path.replace(/^\//, '') : ''
- 
+const imgUrl = (path) => base + path.replace(/^\//, '')
+
 const props = defineProps({
   works: { type: Array, required: true },
 })
- 
+
+// ★ 圖片數量 = works 陣列筆數（到 works.js 加 / 刪）。越多，圓環越完整、越密。
 const N = computed(() => props.works.length)
+
+// ★ 圓環半徑 = 中間「洞」的大小。調大洞更大、卡片更鬆；調小更密。
 const RADIUS = 200
-const FWD = 70
-const UP = -55
-const SCALE = 1.12
-const SPREAD = 12
- 
+
+// ★★ 滑鼠移到圖片上時的效果 ★★
+const FWD = 70 // 往外（朝你的方向）移多少
+const UP = -55 // 升起多少（負數＝往上）
+const SCALE = 1.12 // 放大倍率
+const SPREAD = 12 // 前後圖片讓開的角度
+// （速度在下面 CSS 的 .card → transition: transform 0.5s）
+
 const hovered = ref(null)
 const album = ref(null)
-const currentImg = ref(0)
 const ring = ref(null)
 const stage = ref(null)
- 
-// 這個作品有哪些展開圖
-const albumImages = computed(() => {
-  if (!album.value) return []
-  return album.value.images
-    || (album.value.cover ? [album.value.cover] : [album.value.image])
-})
- 
+
+// 圖片沿圓周排列，最後 rotateY(90deg) 讓「側邊朝中心、正面朝切線」
 function cardTransform(i) {
   const angle = (360 / N.value) * i
   let extra = 0
@@ -48,17 +47,19 @@ function cardTransform(i) {
   }
   return `rotateY(${angle + extra}deg) translateZ(${r}px) translateY(${ty}px) scale(${sc}) rotateY(90deg)`
 }
- 
-let curY = 35
-let curX = -28
-let tgtX = -28
+
+// === 旋轉狀態 ===
+let curY = 0
+let curX = -8
+let tgtX = -8
 let dragVel = 0
-const autoSpin = 0.08
+const autoSpin = 0.12
 let raf = 0
+
 let dragging = false
 let lastX = 0
 let moved = false
- 
+
 function loop() {
   if (album.value === null && hovered.value === null && !dragging) {
     curY += autoSpin + dragVel
@@ -70,7 +71,7 @@ function loop() {
   }
   raf = requestAnimationFrame(loop)
 }
- 
+
 function onDown(e) {
   dragging = true
   moved = false
@@ -80,7 +81,7 @@ function onDown(e) {
 function onMove(e) {
   const r = stage.value.getBoundingClientRect()
   const cy = r.top + r.height / 2
-  tgtX = -28 + ((e.clientY - cy) / (r.height / 2)) * -6
+  tgtX = -8 + ((e.clientY - cy) / (r.height / 2)) * -8
   if (dragging) {
     const dx = e.clientX - lastX
     if (Math.abs(dx) > 3) moved = true
@@ -89,22 +90,30 @@ function onMove(e) {
     lastX = e.clientX
   }
 }
-function onUp() { dragging = false }
- 
-function onEnter(i) { if (!dragging) hovered.value = i }
-function onLeave() { hovered.value = null }
- 
+function onUp() {
+  dragging = false
+}
+
+function onEnter(i) {
+  if (!dragging) hovered.value = i
+}
+function onLeave() {
+  hovered.value = null
+}
 function onCard(i) {
-  if (moved) { moved = false; return }
+  if (moved) {
+    moved = false
+    return
+  }
   album.value = props.works[i]
-  currentImg.value = 0
 }
 function closeAlbum() {
   album.value = null
-  currentImg.value = 0
 }
-function onKey(e) { if (e.key === 'Escape') closeAlbum() }
- 
+function onKey(e) {
+  if (e.key === 'Escape') closeAlbum()
+}
+
 onMounted(() => {
   window.addEventListener('pointermove', onMove)
   window.addEventListener('pointerup', onUp)
@@ -117,11 +126,11 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKey)
   cancelAnimationFrame(raf)
 })
- 
+
 const isVideo = (item) => item?.type === 'video'
 const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
 </script>
- 
+
 <template>
   <div class="gallery">
     <div ref="stage" class="stage" @pointerdown="onDown">
@@ -143,8 +152,9 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
           @mouseleave="onLeave"
           @click="onCard(i)"
         >
-          <img :src="imgUrl(item.cover || item.image)" alt="" draggable="false" />
+          <img :src="imgUrl(item.image)" :alt="item.title" draggable="false" />
           <!--<span v-if="isVideo(item)" class="play">▶</span>-->
+          <!-- hover 時出現的資訊 -->
           <div class="info">
             <p class="info-year">{{ item.year }}</p>
             <p class="info-sub">{{ item.subtitle }}</p>
@@ -152,38 +162,18 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
         </button>
       </div>
     </div>
- 
+
     <transition name="fade">
       <div v-if="album" class="overlay" @click.self="closeAlbum">
         <button class="close" @click="closeAlbum" aria-label="關閉">✕</button>
         <div class="album">
- 
-          <!-- 圖片區：自動符合大小，支援多張切換 -->
-          <div class="media-wrap">
+          <div class="media" :class="{ wide: isVideo(album) }">
             <template v-if="isVideo(album)">
-              <video v-if="isMp4(album.video)" :src="album.video"
-                controls autoplay playsinline class="media-img"></video>
-              <iframe v-else :src="album.video"
-                allow="autoplay; fullscreen" allowfullscreen class="media-img"></iframe>
+              <video v-if="isMp4(album.video)" :src="album.video" controls autoplay playsinline></video>
+              <iframe v-else :src="album.video" allow="autoplay; fullscreen" allowfullscreen></iframe>
             </template>
-            <img v-else :src="imgUrl(albumImages[currentImg])"
-              :alt="album.title" class="media-img" />
- 
-            <!-- 多張圖才顯示左右箭頭 -->
-            <template v-if="!isVideo(album) && albumImages.length > 1">
-              <button class="img-prev" :disabled="currentImg === 0"
-                @click="currentImg--">←</button>
-              <button class="img-next" :disabled="currentImg === albumImages.length - 1"
-                @click="currentImg++">→</button>
-              <div class="img-dots">
-                <span v-for="(_, di) in albumImages" :key="di"
-                  :class="{ active: di === currentImg }"
-                  @click="currentImg = di"></span>
-              </div>
-            </template>
+            <img v-else :src="album.image" :alt="album.title" />
           </div>
- 
-          <!-- 文字資訊 -->
           <div class="meta">
             <p class="year">{{ album.year }}</p>
             <h3>{{ album.title }}</h3>
@@ -195,7 +185,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
     </transition>
   </div>
 </template>
- 
+
 <style scoped>
 .gallery {
   position: relative;
@@ -203,10 +193,11 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   display: flex;
   flex-direction: column;
 }
+
 .stage {
   flex: 1;
   min-height: 72vh;
-  perspective: 900px;
+  perspective: 1100px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -214,7 +205,10 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   touch-action: none;
   overflow: visible;
 }
-.stage:active { cursor: grabbing; }
+.stage:active {
+  cursor: grabbing;
+}
+
 .ring {
   position: relative;
   transform-style: preserve-3d;
@@ -222,22 +216,26 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   height: 0;
   will-change: transform;
 }
+
 .card {
   position: absolute;
-  left: -75px;
-  top: -110px;
+  left: -75px; /* = 寬度一半 */
+  top: -110px; /* = 高度一半 */
   width: 198px;
   height: 280px;
   border: none;
   padding: 0;
   border-radius: 0px;
-  overflow: hidden;
+  /*overflow: hidden;*/
   cursor: pointer;
   background: #e7e3da;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+  /* ↓ 控制移動 / 升起的速度，想更慢把 0.5s 調大 */
   transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.4s;
 }
-.card.hovered { box-shadow: 0 44px 80px rgba(0, 0, 0, 0.4); }
+.card.hovered {
+  box-shadow: 0 44px 80px rgba(0, 0, 0, 0.4);
+}
 .card img {
   width: 100%;
   height: 100%;
@@ -256,18 +254,20 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   color: #fff;
   background: rgba(0, 0, 0, 0.25);
 }
+
 .info {
   position: absolute;
   bottom: 100%;
   left: 0;
   right: 0;
-  padding: 0 4px 8px;
-  text-align: center;
+  padding: 12px 14px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
   opacity: 0;
   transition: opacity 0.3s;
-  pointer-events: none;
 }
-.card.hovered .info { opacity: 1; }
+.card.hovered .info {
+  opacity: 1;
+}
 .info-year {
   font-size: 11px;
   letter-spacing: 0.15em;
@@ -279,8 +279,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   color: var(--muted);
   letter-spacing: 0.04em;
 }
- 
-/* 展開大圖 */
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -289,7 +288,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 80px;
+  padding: 40px;
   backdrop-filter: blur(6px);
 }
 .close {
@@ -306,68 +305,30 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   display: grid;
   grid-template-columns: 1.4fr 1fr;
   gap: 48px;
-  max-width: 1100px;
+  max-width: 1000px;
   width: 100%;
   align-items: center;
   color: var(--paper);
 }
-.media-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  max-height: 78vh;
-}
-.media-img {
-  max-height: 78vh;
-  max-width: 100%;
-  width: auto;
-  height: auto;
+.media {
+  aspect-ratio: 3 / 4;
   border-radius: 6px;
+  overflow: hidden;
   box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+  background: #000;
+}
+.media.wide {
+  aspect-ratio: 16 / 9;
+}
+.media img,
+.media video,
+.media iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: none;
   display: block;
-  object-fit: contain;
-  border: none;
 }
-.img-prev,
-.img-next {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  color: #fff;
-  font-size: 18px;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.img-prev:hover,
-.img-next:hover { background: rgba(255, 255, 255, 0.3); }
-.img-prev:disabled,
-.img-next:disabled { opacity: 0.2; cursor: default; }
-.img-prev { left: -50px; }
-.img-next { right: -50px; }
-.img-dots {
-  position: absolute;
-  bottom: -28px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-}
-.img-dots span {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.img-dots span.active { background: #fff; }
- 
 .meta .year {
   color: var(--accent);
   letter-spacing: 0.2em;
@@ -389,18 +350,36 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   color: #e7e2d8;
   font-size: 15px;
 }
+
 .fade-enter-active,
-.fade-leave-active { transition: opacity 0.3s; }
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
 .fade-enter-from,
-.fade-leave-to { opacity: 0; }
- 
+.fade-leave-to {
+  opacity: 0;
+}
+
 @media (max-width: 760px) {
-  .stage { min-height: 48vh; perspective: 800px; }
-  .card { width: 120px; height: 175px; left: -60px; top: -88px; }
-  .album { grid-template-columns: 1fr; gap: 24px; }
-  .overlay { padding: 20px 20px 40px; }
-  .img-prev { left: -32px; }
-  .img-next { right: -32px; }
+  .stage {
+    min-height: 48vh;
+    perspective: 800px;
+  }
+  .card {
+    width: 120px;
+    height: 175px;
+    left: -60px;
+    top: -88px;
+  }
+  .album {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .media {
+    aspect-ratio: 16 / 10;
+  }
+  .overlay {
+    padding: 20px;
+  }
 }
 </style>
- 

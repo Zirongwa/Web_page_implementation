@@ -10,12 +10,7 @@ export const works = [
     title: '晨間習作',
     subtitle: '攝影 · 2024',
     year: '2024',
-    cover: '/works/01.jpg',
-    images: [                        // ← 點開後可瀏覽的多張圖
-      '/works/01_a.jpg',
-      '/works/01_b.jpg',
-      '/works/01_c.jpg',
-    ],
+    image: '/works/01.jpg',
     width: 198,    // ← 卡片寬度(px)，不填就用預設
     height: 280,   // ← 卡片高度(px)，不填就用預設
     description: '在這裡寫下這件作品的故事、媒材、想法……',
@@ -26,12 +21,7 @@ export const works = [
     title: '城市切片',
     subtitle: '平面設計 · 2024',
     year: '2024',
-    cover: '/works/02.jpg',
-    images: [                        // ← 點開後可瀏覽的多張圖
-      '/works/01_a.jpg',
-      '/works/01_b.jpg',
-      '/works/01_c.jpg',
-    ],
+    image: '/works/02.jpg',
     width: 198,    // ← 卡片寬度(px)，不填就用預設
     height: 280,   // ← 卡片高度(px)，不填就用預設
     description: '這是第二件作品的介紹文字。',
@@ -42,12 +32,7 @@ export const works = [
     title: '無聲對話',
     subtitle: '插畫 · 2025',
     year: '2025',
-    cover: '/works/03.jpg',
-    images: [                        // ← 點開後可瀏覽的多張圖
-      '/works/01_a.jpg',
-      '/works/01_b.jpg',
-      '/works/01_c.jpg',
-    ],
+    image: '/works/03.jpg',
     width: 198,    // ← 卡片寬度(px)，不填就用預設
     height: 280,   // ← 卡片高度(px)，不填就用預設
     description: '這是第三件作品的介紹文字。',
@@ -58,12 +43,7 @@ export const works = [
     title: '光的容器',
     subtitle: '裝置 · 2025',
     year: '2025',
-    cover: '/works/04.jpg',
-    images: [                        // ← 點開後可瀏覽的多張圖
-      '/works/01_a.jpg',
-      '/works/01_b.jpg',
-      '/works/01_c.jpg',
-    ],
+    image: '/works/04.jpg',
     width: 198,    // ← 卡片寬度(px)，不填就用預設
     height: 280,   // ← 卡片高度(px)，不填就用預設
     description: '這是第四件作品的介紹文字。',
@@ -74,7 +54,7 @@ export const works = [
     title: 'Liminal Fade - au6xu 65 ru4',
     subtitle: '錄像 · 2025',
     year: '2025',
-    cover: '/works/Liminal_Fade.jpg',
+    image: '/works/Liminal_Fade.jpg',
     width: 198,    // ← 卡片寬度(px)，不填就用預設
     height: 280,   // ← 卡片高度(px)，不填就用預設
     video: 'https://www.youtube.com/embed/68qgdzrjplc',
@@ -86,10 +66,7 @@ export const works = [
     title: 'Untitled',
     subtitle: '3D場景渲染圖 · 2026',
     year: '2026',
-    cover: '/works/Untitled.JPEG',   // ← 卡片上顯示的封面縮圖
-    images: [                       // ← 點開後可瀏覽的多張圖
-      '/works/Untitled.JPEG',
-    ],
+    image: '/works/Untitled.JPEG',
     width: 198,
     height: 280,
     description: '這是第六件作品的介紹文字。',
@@ -100,12 +77,7 @@ export const works = [
     title: '紙上漫遊',
     subtitle: '手作書 · 2026',
     year: '2026',
-    cover: '/works/07.jpg',
-    images: [                        // ← 點開後可瀏覽的多張圖
-      '/works/01_a.jpg',
-      '/works/01_b.jpg',
-      '/works/01_c.jpg',
-    ],
+    image: '/works/07.jpg',
     width: 198,
     height: 280,
     description: '這是第七件作品的介紹文字。',
@@ -116,12 +88,7 @@ export const works = [
     title: '紙上漫遊',
     subtitle: '手作書 · 2026',
     year: '2026',
-    cover: '/works/08.jpg',
-    images: [                        // ← 點開後可瀏覽的多張圖
-      '/works/01_a.jpg',
-      '/works/01_b.jpg',
-      '/works/01_c.jpg',
-    ],
+    image: '/works/08.jpg',
     width: 198,    // ← 卡片寬度(px)，不填就用預設
     height: 280,   // ← 卡片高度(px)，不填就用預設
     description: '這是第八件作品的介紹文字。',
