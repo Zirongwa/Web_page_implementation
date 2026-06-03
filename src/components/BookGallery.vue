@@ -5,14 +5,17 @@ const props = defineProps({
   works: { type: Array, required: true },
 })
 
-// ★ 頁面數量 = works 陣列筆數（到 works.js 加 / 刪）。頁面越多，越像密集的書本燈。
+// ★ 圖片數量 = works 陣列筆數（到 works.js 加 / 刪）。越多，圓環越完整、越密。
 const N = computed(() => props.works.length)
 
-// ★★ 滑鼠移到頁面上時的效果 ★★
-const LIFT_UP = -55 // 升起多少（負數＝往上）
-const LIFT_FORWARD = 70 // 往前多少
-const LIFT_SCALE = 1.08 // 放大倍率
-const SPREAD = 10 // 前後頁面展開的角度（越大開越多）
+// ★ 圓環半徑 = 中間「洞」的大小。調大洞更大、卡片更鬆；調小更密。
+const RADIUS = 150
+
+// ★★ 滑鼠移到圖片上時的效果 ★★
+const FWD = 70 // 往外（朝你的方向）移多少
+const UP = -55 // 升起多少（負數＝往上）
+const SCALE = 1.12 // 放大倍率
+const SPREAD = 12 // 前後圖片讓開的角度
 // （速度在下面 CSS 的 .card → transition: transform 0.5s）
 
 const hovered = ref(null)
@@ -20,30 +23,26 @@ const album = ref(null)
 const ring = ref(null)
 const stage = ref(null)
 
-// ★ 中空圓柱的「半徑」：數字越大，中間的洞越大、圓越大
-//   想更空就調大、想更密就調小
-const RADIUS = 280
-
-// 頁面排在半徑 RADIUS 的外圈上，面向外 → 中心留空，形成中空圓柱
+// 圖片沿圓周排列，最後 rotateY(90deg) 讓「側邊朝中心、正面朝切線」
 function cardTransform(i) {
-  const base = (360 / N.value) * i
+  const angle = (360 / N.value) * i
   let extra = 0
+  let r = RADIUS
   let ty = 0
-  let tz = 0
   let sc = 1
   if (hovered.value !== null) {
     const d = i - hovered.value
     if (d === 0) {
-      ty = LIFT_UP
-      tz = LIFT_FORWARD
-      sc = LIFT_SCALE
+      r = RADIUS + FWD
+      ty = UP
+      sc = SCALE
     } else {
       const dir = d > 0 ? 1 : -1
       const falloff = Math.max(0, 1 - (Math.abs(d) - 1) * 0.4)
       extra = dir * SPREAD * falloff
     }
   }
-  return `rotateY(${base + extra}deg) translateZ(${RADIUS + tz}px) translateY(${ty}px) scale(${sc})`
+  return `rotateY(${angle + extra}deg) translateZ(${r}px) translateY(${ty}px) scale(${sc}) rotateY(90deg)`
 }
 
 // === 旋轉狀態 ===
@@ -51,7 +50,7 @@ let curY = 0
 let curX = -8
 let tgtX = -8
 let dragVel = 0
-const autoSpin = 0.1
+const autoSpin = 0.12
 let raf = 0
 
 let dragging = false
@@ -79,7 +78,7 @@ function onDown(e) {
 function onMove(e) {
   const r = stage.value.getBoundingClientRect()
   const cy = r.top + r.height / 2
-  tgtX = -8 + ((e.clientY - cy) / (r.height / 2)) * -10
+  tgtX = -8 + ((e.clientY - cy) / (r.height / 2)) * -8
   if (dragging) {
     const dx = e.clientX - lastX
     if (Math.abs(dx) > 3) moved = true
@@ -205,10 +204,10 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
 
 .card {
   position: absolute;
-  left: -80px; /* = 寬度一半，讓頁面置中 */
-  top: -120px; /* = 高度一半 */
-  width: 160px;
-  height: 240px;
+  left: -75px; /* = 寬度一半 */
+  top: -110px; /* = 高度一半 */
+  width: 150px;
+  height: 220px;
   border: none;
   padding: 0;
   border-radius: 4px;
@@ -216,7 +215,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   cursor: pointer;
   background: #e7e3da;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
-  /* ↓ 控制升起 / 展開的速度，想更慢把 0.5s 調大 */
+  /* ↓ 控制移動 / 升起的速度，想更慢把 0.5s 調大 */
   transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.4s;
 }
 .card.hovered {
@@ -328,8 +327,9 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   }
   .card {
     width: 120px;
-    height: 180px;
-    top: -90px;
+    height: 175px;
+    left: -60px;
+    top: -88px;
   }
   .album {
     grid-template-columns: 1fr;
