@@ -67,8 +67,8 @@ export const works = [
     subtitle: '3D場景渲染圖 · 2026',
     year: '2026',
     image: '/works/Untitled.JPEG',
-    width: 240,
-    height: 135,
+    width: 198,
+    height: 280,
     description: '這是第六件作品的介紹文字。',
   },
   {
