@@ -196,7 +196,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   left: -110px;
   top: -150px;
   width: 220px;
-  height: 312px;
+  height: 300px;
   border: none;
   padding: 0;
   border-radius: 2.5px;
