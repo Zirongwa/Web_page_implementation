@@ -216,7 +216,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   border: none;
   padding: 0;
   border-radius: 0px;
-  overflow: hidden;
+  /*overflow: hidden;*/
   cursor: pointer;
   background: #e7e3da;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
