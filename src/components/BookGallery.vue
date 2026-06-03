@@ -144,6 +144,11 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
         >
           <img :src="item.image" :alt="item.title" draggable="false" />
           <!--<span v-if="isVideo(item)" class="play">▶</span>-->
+          <!-- hover 時出現的資訊 -->
+          <div class="info">
+            <p class="info-year">{{ item.year }}</p>
+            <p class="info-sub">{{ item.subtitle }}</p>
+          </div>
         </button>
       </div>
     </div>
@@ -238,6 +243,31 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   font-size: 26px;
   color: #fff;
   background: rgba(0, 0, 0, 0.25);
+}
+
+.info {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 14px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.card.hovered .info {
+  opacity: 1;
+}
+.info-year {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: #fff;
+  margin-bottom: 3px;
+}
+.info-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.04em;
 }
 
 .overlay {
