@@ -5,7 +5,7 @@
 <template>
   <div class="shell">
     <header class="top">
-      <p class="name">王子蓉</p>
+      <p class="name">王子榮</p>
       <nav class="nav">
         <RouterLink to="/">作品輪盤</RouterLink>
         <RouterLink to="/book">書頁展開</RouterLink>
@@ -16,7 +16,7 @@
     <RouterView />
 
     <footer class="foot">
-      <span>© 2026 王子蓉</span>
+      <span>© 2026 王子榮</span>
       <span>跨域創作基礎</span>
     </footer>
   </div>

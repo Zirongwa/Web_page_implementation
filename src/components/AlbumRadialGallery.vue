@@ -170,14 +170,14 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
 
 .stage {
   flex: 1;
-  min-height: 56vh;
+  min-height: 72vh;
   perspective: 1700px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: grab;
   touch-action: none;
-  overflow: hidden;
+  overflow: visible;
 }
 .stage:active {
   cursor: grabbing;
