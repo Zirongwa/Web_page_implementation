@@ -44,7 +44,7 @@ export const works = [
     id: 5,
     type: 'video',
     title: 'Liminal Fade - au6xu 65 ru4',
-    subtitle: '動態影像 · 2025',
+    subtitle: '錄像 · 2025',
     year: '2025',
     image: '/works/Liminal_Fade.jpg',
     video: 'https://www.youtube.com/embed/68qgdzrjplc',
