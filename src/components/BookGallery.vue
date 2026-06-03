@@ -140,7 +140,14 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
           :key="item.id"
           class="card"
           :class="{ hovered: i === hovered }"
-          :style="{ transform: cardTransform(i), zIndex: i === hovered ? 20 : 1 }"
+          :style="{
+            transform: cardTransform(i),
+            zIndex: i === hovered ? 20 : 1,
+            width: item.width ? item.width + 'px' : null,
+            height: item.height ? item.height + 'px' : null,
+            marginLeft: item.width ? -(item.width / 2) + 'px' : null,
+            marginTop: item.height ? -(item.height / 2) + 'px' : null,
+          }"
           @mouseenter="onEnter(i)"
           @mouseleave="onLeave"
           @click="onCard(i)"
@@ -214,8 +221,8 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   position: absolute;
   left: -75px; /* = 寬度一半 */
   top: -110px; /* = 高度一半 */
-  width: 198.3px;
-  height: 280.6px;
+  width: 198px;
+  height: 280px;
   border: none;
   padding: 0;
   border-radius: 0px;
