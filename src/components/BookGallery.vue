@@ -1,5 +1,8 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+// 加在 script setup 裡，其他程式碼的上面
+const base = import.meta.env.BASE_URL
+const imgUrl = (path) => base + path.replace(/^\//, '')
 
 const props = defineProps({
   works: { type: Array, required: true },
@@ -142,7 +145,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
           @mouseleave="onLeave"
           @click="onCard(i)"
         >
-          <img :src="item.image" :alt="item.title" draggable="false" />
+          <img :src="imgUrl(item.image)" :alt="item.title" draggable="false" />
           <!--<span v-if="isVideo(item)" class="play">▶</span>-->
           <!-- hover 時出現的資訊 -->
           <div class="info">
