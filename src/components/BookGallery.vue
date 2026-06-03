@@ -9,7 +9,7 @@ const props = defineProps({
 const N = computed(() => props.works.length)
 
 // ★ 圓環半徑 = 中間「洞」的大小。調大洞更大、卡片更鬆；調小更密。
-const RADIUS = 150
+const RADIUS = 200
 
 // ★★ 滑鼠移到圖片上時的效果 ★★
 const FWD = 70 // 往外（朝你的方向）移多少
@@ -181,14 +181,14 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
 
 .stage {
   flex: 1;
-  min-height: 56vh;
+  min-height: 72vh;
   perspective: 1100px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: grab;
   touch-action: none;
-  overflow: hidden;
+  overflow: visible;
 }
 .stage:active {
   cursor: grabbing;
@@ -210,7 +210,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   height: 220px;
   border: none;
   padding: 0;
-  border-radius: 4px;
+  border-radius: 0px;
   overflow: hidden;
   cursor: pointer;
   background: #e7e3da;
