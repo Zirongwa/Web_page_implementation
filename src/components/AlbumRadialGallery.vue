@@ -199,7 +199,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
   height: 300px;
   border: none;
   padding: 0;
-  border-radius: 5px;
+  border-radius: 2.5px;
   overflow: hidden;
   cursor: pointer;
   background: #e7e3da;
