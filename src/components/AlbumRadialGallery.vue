@@ -131,7 +131,7 @@ const isMp4 = (src) => typeof src === 'string' && src.endsWith('.mp4')
           @click="onCard(i)"
         >
           <img :src="item.image" :alt="item.title" draggable="false" />
-          <span v-if="isVideo(item)" class="play">▶</span>
+          <!--<span v-if="isVideo(item)" class="play">▶</span>-->
         </button>
       </div>
     </div>
